@@ -61,18 +61,14 @@ def in2DArray (value,array):
 
 def getArrayValue (x,y,array):#data "wraping" around the edges.
     size = len(array)
-    if (x>=size):
-        x=x%size
-    if (y>=size):
-        y=y%size
+    x=x%size
+    y=y%size
     return(array[x][y])
 
 def setArrayValue (x,y,value,array): #data "wraping" around the edges
     size = len(array)
-    if (x>=size):
-        x= x%size
-    if (y>=size):
-        y = y%size
+    x= x%size
+    y = y%size
     array[x][y]=value
 
 def numberOfMoorNeighbours (x,y,array):
@@ -99,7 +95,6 @@ def myGaussianBlur (array,steps):
 
 
 def blenderOutput(zCoords,name = "terrain", finalSize=10, position = None):
-    """Input: Z values of a squarish Heightmap (2 dimensional array). Output: if run in Blender: Square mesh, else: syntax error."""
     if position == None:
         position = bpy.context.scene.cursor_location
     size=len(zCoords)
@@ -419,7 +414,6 @@ def createCyclesTerrainMaterial():
 
     return terrainMaterial
 
-
 class createAngleAndHeightMapOfTerrain():
         def __init__ (self,obj = None,heightMap = None):
             if obj == None :
@@ -539,91 +533,6 @@ class createForest():
 
                 i+=1
 
-class createRivers ():
-    def __init__(self,terrainObject,heightMap,seaMap,amountOfRivers = 20, minRiverSize = 25, minDistanceOfRivers = 5,carveDepth =0.1):
-        tolerance             = 0.0 #set to about 0.02 for some funny, but for my purpose unusable results.
-        minRiverSize          = 25
-        self.size             = len(heightMap)
-        self.riverMap         = [x[:] for x in [[int(0)]*self.size]*self.size]
-        lowerRiverSpawnLimit  = (bpy.context.active_object.dimensions.z/5)*0.1
-        higherRiverSpawnLimit = lowerRiverSpawnLimit + bpy.context.active_object.dimensions.z/5
-        rivers                = 0
-        riverCords            = []
-        startPoints           = []
-        enoughRivers          = False
-        loops                 = 0
-        self.carveDepth       = carveDepth
-        self.terrainObject    = terrainObject
-        self.minBlenderDistanceOfRivers = (terrainObject.dimensions.z/len(seaMap))*minDistanceOfRivers
-        blenderSizeX = self.terrainObject.dimensions.x
-        print("River Calc begun")
-        while not enoughRivers:
-            xStart,yStart=randint(0,self.size-1),randint(0,self.size-1)
-            startHeight = heightMap [xStart][yStart]
-            if startHeight > lowerRiverSpawnLimit: #and startHeight < higherRiverSpawnLimit:
-                nextRiverSegment = [xStart,yStart,startHeight] #coordinates on Maps
-                blenderRiver = [[(xStart/self.size)*blenderSizeX-0.5*blenderSizeX, #river coordinates in Blender coordinate system
-                                (yStart/self.size)*blenderSizeX-0.5*blenderSizeX,
-                                startHeight]]
-
-                thisStartPoints=[blenderRiver[rivers][0],blenderRiver[rivers][1]]#Starting points in Blender coords
-                for i in range(len(startPoints)):
-                    if abs(thisStartPoints[0]-startPoints[i][0]) < self.minBlenderDistanceOfRivers:
-                        continue
-
-                    if abs(thisStartPoints[1]-startPoints[i][1]) < self.minBlenderDistanceOfRivers:
-                        continue
-
-                startPoints.append(thisStartPoints)
-
-                riverFinished = False
-                innerLoops = 0
-                while not riverFinished :
-
-                    if getArrayValue(xStart-1,yStart, heightMap)-tolerance < nextRiverSegment[2]:
-                        nextRiverSegment = [xStart-1,yStart,getArrayValue(xStart-1,yStart, heightMap)]
-
-                    if getArrayValue (xStart,yStart-1, heightMap)-tolerance  < nextRiverSegment[2]:
-                        nextRiverSegment = [xStart,yStart-1,getArrayValue(xStart,yStart-1, heightMap)]
-
-                    if getArrayValue (xStart+1,yStart, heightMap)-tolerance   < nextRiverSegment[2]:
-                        nextRiverSegment = [xStart+1,yStart,getArrayValue(xStart+1,yStart, heightMap)]
-
-                    if getArrayValue (xStart,yStart+1, heightMap)-tolerance   < nextRiverSegment[2]:
-                        nextRiverSegment = [xStart,yStart+1,getArrayValue(xStart,yStart+1, heightMap)]
-
-                    if seaMap[nextRiverSegment[0]][nextRiverSegment[1]] == 1:
-                         riverFinished = True
-                         if len(blenderRiver)> minRiverSize:
-                            self.blenderOutputRiver("river","river",blenderRiver)
-                            riverCoords.append([blenderRiver])
-                            rivers+=1
-                         break
-
-
-                    self.riverMap[xStart][yStart] += 1
-
-                    blenderRiverSegmentX = (nextRiverSegment[0]/self.size)*blenderSizeX-0.5*blenderSizeX
-                    blenderRiverSegmentY = (nextRiverSegment[1]/self.size)*blenderSizeX -0.5*blenderSizeX
-                    blenderRiver.append([blenderRiverSegmentX,blenderRiverSegmentY,nextRiverSegment[2]])
-                    xStart,yStart = nextRiverSegment[0]+randint(-0,0),nextRiverSegment[1]+randint(-0,0)#Some random variation (±1) gives interesting river paths. but I prefered the ones, which took the proper path.
-
-                    if innerLoops >= self.size:
-                        print("No Sea connection found. River abborted.")
-                        riverFinished = True
-
-                if rivers > amountOfRivers:
-                    enoughRivers = True
-                    print(self.riverMap)
-
-                loops+=1
-
-                if loops > self.size**2:
-                    print("No more rivers of this size found.")
-                    print(self.riverMap)
-                    break
-
-
     def blenderOutputRiver(self,objname, curvename, list):
 
         curvedata = bpy.data.curves.new(name=curvename, type='CURVE')
@@ -639,7 +548,6 @@ class createRivers ():
             x, y, z = list[i]
             polyline.points[i].co = (x, y, z, 1)
 
-
     def carveRivers ():
         i=0
         for scene in bpy.data.scenes:
@@ -653,7 +561,6 @@ class createRivers ():
                     bpy.ops.transform.translate(value=(0.0, 0.0, - self.riverMap[x][y] * self.carveDepth), constraint_orientation='GLOBAL', proportional='CONNECTED', proportional_edit_falloff='SHARP', proportional_size=1.0, release_confirm=True)
 
                 i+=1
-
 
 class diamondSquare():
 
@@ -964,7 +871,8 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
 
 
     erosionIsInverted = BoolProperty(name = "Inverse erosion",
-            description = "Moves material, if angle is lower than"+str(erosionAngle),default = True)
+            description = "Moves material, if angle is lower than the specified one.",
+            default = True)
 
 
     erosionSteps = IntProperty(name="Steps",
@@ -1017,22 +925,7 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
             description="How many steps the water will be smoothed processed",
             default=8, min=0)
 
-    ##RIVERS self,terrainObject,heightMap,seaMap,amountOfRivers = 20, minRiverSize = 25, minDistanceOfRivers = 5
-
-    amountOfRivers = IntProperty(name="Rivers",
-            description="How many Rivers should be generated",
-            default=1, min=0)
-
-    minRiverSize = IntProperty(name="Minimal length",
-            description="The minimal length of the rivers (How many vertices)",
-            default=1, min=0)
-
-    minRiverDistance = IntProperty(name="Minimal distance",
-            description="The minimal distance of the river sources (How many vertices)",
-            default=5, min=0)
-
-    deepnessOfPath = FloatProperty(name = "Carving depth",
-            description = "The deepness of the river bed", default = 1.1)
+    #Gui arrangement
 
     def draw (self,context):
 
@@ -1093,17 +986,6 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
             col.prop(self,'evapAmount')
             col.prop(self,'waterSmoothing')
 
-            layout.label("Rivers:")
-            box = layout.box()
-            split = box.split()
-            col = split.column()
-            col.prop(self,'amountOfRivers')
-            col.prop(self,'minRiverLenght')
-            col = split.column()
-            col.prop(self,'deepnessOfPath')
-            col.prop(self,'minRiverDistance')
-
-
          if self.mode == '2':
 
             layout.label("Forest:")
@@ -1134,7 +1016,7 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
     @classmethod
     def poll (cls,context):
         if bpy.context.active_object != None:
-            return bpy.context.active_object.mode == 'OBJECT'
+            return bpy.context.active_object.mode == 'OBJECT' or bpy.context.active_object.mode == 'EDIT'
         else: return True
 
     def createTerrain (self):
@@ -1146,6 +1028,7 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
          self.heightMap = angleAndHeightMap.heightMap
 
     def adoptTerrain (self,obj):
+         bpy.ops.object.mode_set(mode = 'OBJECT')
          self.terrainObject = obj
          self.selfCreatedTerrain = False
          angleAndHeightMap = createAngleAndHeightMapOfTerrain(self.terrainObject)
@@ -1153,21 +1036,17 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
          self.terrainVerts = angleAndHeightMap.heightMap
          bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN', center='MEDIAN')
 
-
     def invoke(self, context,event):
         self.subdivisions = 6 #Resets everytime the script launches.
         self.update_Terrain = True #Must be calculated, else other things don't work.
         self.size = 2**self.subdivisions+1
-        self.riverMap = [x[:] for x in [[int(0)]*self.size]*self.size]
         self.seaMap = [x[:] for x in [[int(0)]*self.size]*self.size]
-        #bpy.ops.object.mode_set(mode = 'OBJECT')
         obj = bpy.context.active_object
         if obj == None:
            self.createTerrain()
         else:
-            if obj.type == 'MESH':
+            if bpy.context.active_object.mode == 'EDIT':
                 self.adoptTerrain(obj)
-
             else:
                 self.createTerrain()
 
@@ -1186,14 +1065,8 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
                 self.waterObject.data.materials.append(self.waterMaterial)
 
         if self.update_Forest:
-            self.obstacleMap = [x[:] for x in [[int(0)]*self.size]*self.size]
-            for x in range(len(self.seaMap)):
-                for y in range(len(self.seaMap)):
-                    self.obstacleMap[x][y] = self.seaMap[x][y]+self.riverMap[x][y]
             self.forestLimits = [self.lowerForestLimit,self.higherForestLimit]
             createForest(self.terrainObject, self.terrainVerts, self.angleMap,None,self.useGameOfLife, self.forestLimits, self.forestAngle, self.golSteps, self.minTreeHeight, self.startPercent)
-
-        #createRivers(self.terrainObject,self.terrainVerts,self.seaMap,self.amountOfRivers,self.minRiverSize,self.minRiverDistance)
 
         if self.mode == 2:
             bpy.ops.object.mode_set(mode = 'VERTEX_PAINT')
@@ -1245,7 +1118,7 @@ class forest_vertex_groups_add(bpy.types.Operator):
     def invoke (self,context,event):
         obj           = MESH_OT_primitive_landscape_add.terrainObject
         heightMap     = MESH_OT_primitive_landscape_add.heightMap
-        obstacleMap   = None  ########################!!!!! Adding river and sea Maps together!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        seaMap        = MESH_OT_primitive_landscape_add.seaMap
         useGameOfLife = MESH_OT_primitive_landscape_add.useGameOfLife
         forestLimits  = [MESH_OT_primitive_landscape_add.lowerForestLimit,MESH_OT_primitive_landscape_add.higherForestLimit]
         forestLimits  = forestLimits.sort()
