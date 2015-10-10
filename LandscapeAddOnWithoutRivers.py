@@ -594,6 +594,10 @@ class diamondSquare():
         r=uniform(self.minLift,self.maxLift)/(self.pseudoH**self.step)
         return r
 
+    def initiateStart(self):
+        for x in range(0,self.size):
+            for y in range (0,self.size):
+                self.setVert(x,y,roughness())
 
     def getVert (self,x,y):
         x=x%self.size
@@ -631,6 +635,7 @@ class diamondSquare():
 
         for y in range (0,self.size,self.stepsize):
             for x in range (0,self.size,self.stepsize):
+                #Two times diamond because
                 self.diamond(x+self.halfstepSize,y)
                 self.diamond(x,y+self.halfstepSize)
 
@@ -685,64 +690,6 @@ class thermalErosion():
         return degrees(atan(height1-height0))
 
 
-class createSeas:
-    # [left,top,right,bottom], 0 punkt oben links.
-    def __init__(self,terrainObject,twoDimensionalHeightArray,steps=10,rainAmount=1,evaporationAmount=1, smooth = 5):
-        """twoDimensionalHeightArray,steps,rainAmount,dissolveAmount,evaporationAmount,solubility"""
-        self.terrainHeight    = twoDimensionalHeightArray
-        self.size             = len(twoDimensionalHeightArray)
-        self.waterMap         = [x[:] for x in [[0]*self.size]*self.size]
-        self.waterFlowMap     = [x[:] for x in [[0]*self.size]*self.size]
-        self.rainAmount       = rainAmount
-        self.evaporationAmount= evaporationAmount
-        self.steps            = steps
-        self.smooth           = smooth
-        self.terrainObject    = terrainObject
-        self.blenderSize      = terrainObject.dimensions.x
-        for i in range(steps):
-            self.waterStep()
-
-        self.realWaterHeight = [x[:] for x in [[0]*self.size]*self.size]
-        for x in range(self.size):
-            for y in range(self.size):
-                self.realWaterHeight[x][y] = self.terrainHeight[x][y]+self.waterMap[x][y]
-
-        myGaussianBlur(self.realWaterHeight,self.smooth)
-        terrainObjectData = self.terrainObject.data
-
-        self.waterObject= blenderOutput(self.realWaterHeight,"water",self.blenderSize)
-        waterObjectData = self.waterObject.data
-
-#        bpy.context.scene.objects.active = waterObject
-
-        bpy.ops.object.mode_set(mode = 'EDIT')
-        bpy.ops.mesh.select_all(action='DESELECT')
-        bpy.ops.object.mode_set(mode = 'OBJECT')
-
-        #Create a Map of where the seas. 1 : sea 0 : no sea. So I can easily find the sea borders.
-        self.seaMap = [x[:] for x in [[1]*self.size]*self.size]
-        i = 0
-        for x in range (self.size):
-            for y in range (self.size):
-                if waterObjectData.vertices[i].co[2] < terrainObjectData.vertices[i].co[2]:
-                    waterObjectData.vertices[i].select = True
-                    self.seaMap[x][y] = 0
-                i+=1
-
-        #Delete All vertices, which are underneath the terrain vertices:
-
-        bpy.ops.object.mode_set(mode = 'EDIT')
-        bpy.ops.mesh.select_less()
-        bpy.ops.mesh.delete(type='VERT')
-
-        bpy.ops.object.mode_set(mode = 'OBJECT')
-
-
-    def rain(self):
-        for x in range (self.size):
-            for y in range (self.size):
-                self.waterMap[x][y]+=self.rainAmount
-
     def flow (self):
         #where should water flow?
         for x in range (self.size):
@@ -767,6 +714,17 @@ class createSeas:
                 #First the cells get the water, which would be higher if all the water was added.
                 #This way the rest can be easily distributed in a second for-loop.
                 evenedOutCells = 0
+
+                for i in range (numberOfLowerNeighbours):
+                    lowerWaterHeight = getArrayValue(lowerNeighbours[i][0],lowerNeighbours[i][1],water)
+                    lowerCellHeight  = getArrayValue(lowerNeighbours[i][0],lowerNeighbours[i][1],terrain)+getArrayValue(lowerNeighbours[i][0],lowerNeighbours[i][1],water)
+                    if lowerCellHeight+waterToEachCell < water[x][y]+terrain[x][y]:
+                            setArrayValue(lowerNeighbours[i][0],lowerNeighbours[i][1],lowerWaterHeight+waterToEachCell,water)
+                            water[x][y]-=waterToEachCell
+                            self.waterFlowMap[x][y] = waterToEachCell
+
+                waterToEachCell = water[x][y]/(numberOfLowerNeighbours-evenedOutCells+1) #has to be recalculated, since there's now a different amount of lower Cells and a different amount of water on the active cell.
+
                 for i in range (numberOfLowerNeighbours):
                     lowerWaterHeight = getArrayValue(lowerNeighbours[i][0],lowerNeighbours[i][1],water)
                     lowerCellHeight  = getArrayValue(lowerNeighbours[i][0],lowerNeighbours[i][1],terrain)+getArrayValue(lowerNeighbours[i][0],lowerNeighbours[i][1],water)
@@ -778,16 +736,6 @@ class createSeas:
                             self.waterFlowMap[x][y]=movedWater
 
                             evenedOutCells+=1 #one Neighbour more is now as high as the active cell.
-
-                waterToEachCell = water[x][y]/(numberOfLowerNeighbours-evenedOutCells+1) #has to be recalculated, since there's now a different amount of lower Cells and a different amount of water on the active cell.
-
-                for i in range (numberOfLowerNeighbours):
-                    lowerWaterHeight = getArrayValue(lowerNeighbours[i][0],lowerNeighbours[i][1],water)
-                    lowerCellHeight  = getArrayValue(lowerNeighbours[i][0],lowerNeighbours[i][1],terrain)+getArrayValue(lowerNeighbours[i][0],lowerNeighbours[i][1],water)
-                    if lowerCellHeight+waterToEachCell < water[x][y]+terrain[x][y]:
-                            setArrayValue(lowerNeighbours[i][0],lowerNeighbours[i][1],lowerWaterHeight+waterToEachCell,water)
-                            water[x][y]-=waterToEachCell
-                            self.waterFlowMap[x][y] = waterToEachCell
 
     def dissolve (self):
         for x in range (self.size):
@@ -994,8 +942,6 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
             col.prop(self,'higherForestLimit')
             col.prop(self,'forestAngle')
             col.prop(self,'golSteps')
-            col.operator("create.forest", text = "Forest")
-
 
          layout.label("Updates:")
          box = layout.box()
@@ -1004,8 +950,6 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
          col.prop(self,'update_Erosion')
          col.prop(self,'update_Seas')
          col.prop(self,'update_Forest')
-
-
 
     @classmethod
     def poll (cls,context):
@@ -1104,26 +1048,6 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
 
         return {'FINISHED'}
 
-
-class forest_vertex_groups_add(bpy.types.Operator):
-    bl_idname = "create.forest"
-    bl_label = "Create Forest Vertex Group"
-
-    def invoke (self,context,event):
-        obj           = MESH_OT_primitive_landscape_add.terrainObject
-        heightMap     = MESH_OT_primitive_landscape_add.heightMap
-        seaMap        = MESH_OT_primitive_landscape_add.seaMap
-        useGameOfLife = MESH_OT_primitive_landscape_add.useGameOfLife
-        forestLimits  = [MESH_OT_primitive_landscape_add.lowerForestLimit,MESH_OT_primitive_landscape_add.higherForestLimit]
-        forestLimits  = forestLimits.sort()
-        angle         = MESH_OT_primitive_landscape_add.forestAngle
-        steps         = MESH_OT_primitive_landscape_add.golSteps
-        minHeight     = MESH_OT_primitive_landscape_add.minTreeHeihgt
-        startPercent  = MESH_OT_primitive_landscape_add.startPercent
-
-        createForest(obj, heightMap,angleMap,obstacleMap,useGameOfLife, forestLimits, angle, steps, minHeight, startPercent)
-
-        return('FINISHED')
 #
 #    Registration and so on.
 #
