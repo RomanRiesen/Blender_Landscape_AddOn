@@ -59,20 +59,16 @@ def in2DArray (value,array):
 
 
 
-def getArrayValue (x,y,array):#data "wraping" around the edges.
+def getArrayValue (x,y,array):#data "wraping" around the edges. ##make Option for wrap/non wraping?
     size = len(array)
-    if (x>=size):
-        x=x%size
-    if (y>=size):
-        y=y%size
+    x=x%size
+    y=y%size
     return(array[x][y])
 
 def setArrayValue (x,y,value,array): #data "wraping" around the edges
     size = len(array)
-    if (x>=size):
-        x= x%size
-    if (y>=size):
-        y = y%size
+    x= x%size
+    y = y%size
     array[x][y]=value
 
 def numberOfMoorNeighbours (x,y,array):
@@ -686,23 +682,15 @@ class diamondSquare():
         return r
 
 
-    def getVert (self,x,y):#data "wraping" around the edges. ##make Option for wrap/non wraping?
-
-        if (x>=self.size):
-            x=x-self.size
-        if (y>=self.size):
-            y=y-self.size
+    def getVert (self,x,y):#data "wraping" around the edges
+        x=x%self.size
+        y=y%self.size
         return(self.verts[x][y])
 
-    def setVert (self,x,y,value): #data "wraping" around the edges ##make Option for wrap/non wraping?
-
-        if (x>=self.size):
-            x= x-(self.size)
-        if (y>=self.size):
-            y = y-(self.size)
-
-        #or reshaping == True):#only overwrite infs, important when you want to have the marge of the list defined, and want the rest to be filled up through the algorithm.
-        self.verts[x][y]=value #but when reshaping the terrain, I want to overwrite it.
+    def setVert (self,x,y,value): #data "wraping" around the edges
+        x=x%self.size
+        y=y%self.size
+        self.verts[x][y]=value
 
     def diamond (self,x,y):
 

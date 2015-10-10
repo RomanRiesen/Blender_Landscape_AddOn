@@ -32,6 +32,8 @@ from random import randint,uniform,seed
 from math import ceil,degrees,atan
 from bpy.props import *
 
+##utils
+
 def inFloatRange(value, limit1,limit2):
     if value >= limit1 and value <= limit2:
         return True
@@ -593,23 +595,15 @@ class diamondSquare():
         return r
 
 
-    def getVert (self,x,y):#data "wraping" around the edges. ##make Option for wrap/non wraping?
-
-        if (x>=self.size):
-            x=x-self.size
-        if (y>=self.size):
-            y=y-self.size
+    def getVert (self,x,y):
+        x=x%self.size
+        y=y%self.size
         return(self.verts[x][y])
 
-    def setVert (self,x,y,value): #data "wraping" around the edges ##make Option for wrap/non wraping?
-
-        if (x>=self.size):
-            x= x-(self.size)
-        if (y>=self.size):
-            y = y-(self.size)
-
-        #or reshaping == True):#only overwrite infs, important when you want to have the marge of the list defined, and want the rest to be filled up through the algorithm.
-        self.verts[x][y]=value #but when reshaping the terrain, I want to overwrite it.
+    def setVert (self,x,y,value):
+        x= x%self.size
+        y = y%self.size
+        self.verts[x][y]=value
 
     def diamond (self,x,y):
 
