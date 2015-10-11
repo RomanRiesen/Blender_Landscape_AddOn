@@ -22,7 +22,7 @@ bl_info = {
     "version": (0, 0, 1),
     "blender": (2, 74, 0),
     "location": "View3D > Add > mesh",
-    "description": ("Adds a landscape mesh (Diamond-Square Algorithm) as well as tools for erosion and forrest. If you have an object selected you can apply material, seas and vertex groups for forrests."),
+    "description": ("Adds a landscape mesh (Diamond-Square Algorithm) as well as tools for erosion and forest distribution. If you have an object selected you can apply material, seas and vertex groups for forests."),
     "warning": "",
     "category": "Add mesh",}
 
