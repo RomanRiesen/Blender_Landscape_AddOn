@@ -1,0 +1,762 @@
+\documentclass[12pt,twoside]{book}
+\usepackage[a4paper,top=1in, bottom=1.25in, left=1.25in, right=1.25in]{geometry}
+\usepackage{ngerman}
+\usepackage[utf8]{inputenc}
+
+
+\pagestyle{plain}
+
+
+
+\usepackage{fancyhdr}
+\usepackage{sectsty}
+\usepackage{listings}%Programm code info @ http://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+\usepackage{scrextend} %f\uer praktische Abst\"ande. % Syntax: \begin{addmargin}[<left indentation>]{<indentation>}
+\usepackage{graphicx}
+%\usepackage {picins} %http://de.wikibooks.org/wiki/LaTeX-Kompendium:_Schnellkurs:_Grafiken \piccaption{Bildunterschrift}  \parpic[r]{\includegraphics [width=3cm,height=3cm]{grafik.jpg}}
+\usepackage{multirow}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\usepackage{mathtools}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{lstautogobble}
+\usepackage{color}
+%\usepackage{showframe}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{url}
+\usepackage[linktocpage=true]{hyperref}
+\usepackage{hyperref}
+\definecolor{gray50}{rgb}{0.0,0.0,0.0}
+\definecolor{gray75}{rgb}{0.0,0.0,0.0}
+
+%\titleformat{\chapter}[hang]{\huge\bfseries}{\textcolor{gray50}{\thechapter}\textcolor{gray75}{.}\hspace{20pt}}{0pt}{\huge\bfseries}
+%\titleformat{\section}[hang]{\large\bfseries}{\textcolor{gray50}{\thesection}\textcolor{gray75}{.}\hspace{20pt}}{0pt}{\large\bfseries}
+
+%\renewcommand{\familydefault}{\sfdefault}
+%\allsectionsfont{\normalfont\slfamily\slseries}
+
+
+\definecolor{comments}{rgb}{0,0.6,0}
+\definecolor{numbers}{rgb}{0.5,0.5,0.5}
+\definecolor{keywords}{rgb}{0.5,0.1,0.1}
+\definecolor{strings}{rgb}{0.7,0,0.15}
+\definecolor{rulecolor}{rgb}{0.4,0,0}
+\definecolor{backgroundcolor}{rgb}{0.99,0.94,0.94}
+
+
+\lstset{ %
+  backgroundcolor=\color{backgroundcolor},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\ttfamily,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{comments},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=leftline,                     % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{keywords},       % keyword style
+  language=Python,                 % the language of the code
+  otherkeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=7pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{numbers}, % the style that is used for the line-numbers
+  rulecolor=\color{rulecolor},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding picular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{strings},     % string literal style
+  tabsize=2,                       % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\pagestyle{fancy}
+%\fancyhf{}
+%\fancyfoot[CE,CO]{\leftmark}
+%\fancyfoot[LE,RO]{\thepage}
+
+\begin{document}
+
+\frontmatter
+\lstset{ %
+morekeywords={in,def,super}
+}
+
+{
+
+\begin{titlepage}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{Bilder_usw/Landscape001.png}
+\captionsetup{labelformat=empty}
+\caption[Ein Modell einer einfachen Landschaft mit Wireframe-Modifier]{}
+\end{figure}
+
+\begin{flushright}
+{ \huge \bfseries \vspace*{0cm} \noindent Landschaften aus dem Computer\\[1.0cm] }
+
+\rule{11cm}{1.5pt}
+
+\vspace*{1cm}
+\Large
+\noindent
+Maturaarbeit von Roman Riesen\\ Betreuung durch Kai Rollé \\10.10.2015\\
+\vspace{0.5cm}
+
+
+\end{flushright}
+\end{titlepage}
+}
+
+
+\setcounter{page}{0}
+\newpage
+\newpage
+\tableofcontents
+
+\listoffigures
+
+
+\mainmatter
+
+\chapter{Zielsetzung}
+Ziel meiner Maturaarbeit ist ein Add-on f\"ur Blender\footnote{\url{www.blender.org}}, einer Open-Source 3D Software, zu erstellen. Es soll eine M\"oglichkeit bieten, zuf\"allige Landschaften zu generieren - mit einer einfachen Wassersimulation f\"ur Fl\"usse und Seen. Ebenso soll es Erosion und die Verteilung von Pflanzen berechnen k\"onnen.
+Dabei habe ich den Anspruch, dass sie nicht allzu unrealistisch aussehen sollen.
+
+
+\chapter{Motivation}
+W\"ahrend es vor 50 Jahren noch revolution\"ar war, dass ein Computer nicht nur Text ausgeben konnte, sondern Bilder, ist heute das Umgekehrte kaum mehr vorstellbar. Von der Lochkarte bis zum Internet - von der Kontrollleuchte bis zur Informationsrevolution. Die Computertechnik beeinflusst das Leben aller. Wie die Kunst dies bereits Jahrtausende vorher tat. Die 3D-Animation ist an der Spitze von beidem zugleich. Sie erforscht und erweitert unser  Verst\"andnis von Kunst und bringt Computer an ihre Grenzen. \\
+Pers\"onlich interessiert mich auch das Zusammenspiel von Technik und Kunst - von Foto \"uber Film bis Spiel.
+Deshalb wollte ich eine Maturaarbeit in diesem Bereich schreiben.
+Bald kam ich auf die Idee, ein Add-on f\"ur Blender zu schreiben. Zuerst experimentierte ich etwas mit Mandelbulbs, eine Art dreidimensionale Fraktale, herum.
+Doch schon nach Kurzem war klar, dass dies in einem eigenen Programm besser aufgehoben ist als in einem Blender Add-on.
+Ich entschied mich die Mandelbulbs und nicht die Idee des Add-ons fallen zu lassen. 
+Herr Rollé hatte bereits w\"ahrend eines Treffens erw\"ahnt, dass die Hintergrundlandschaften in Filmen auch auf fraktalen Methoden beruhen.
+Nach etwas Recherche entschied ich mich ein Add-on zum Generieren von Landschaften zu machen.
+
+
+\chapter{Konzepte und Begriffe in der Computergrafik}
+
+Wie wir sp\"ater sehen werden, nehme ich eine sogenannte H\"ohenkarte als Grundlage f\"ur das Terrain-Model. Diese enth\"alt f\"ur jeden Punkt auf einer Fl\"ache jeweils die H\"ohe. Als Bild dargestellt ist schwarz dann hoch und weiss tief. Da so nur eine H\"ohenangabe pro Punkt existiert und alles darunter als regelm\"assig gef\"ullt angenommen wird, k\"onnen mit dieser Methode keine H\"ohlen oder \"Uberh\"ange dargestellt werden. \\
+Ausser es wird ein 3D-Modell erstellt, welches beliebig bearbeitet werden kann.\\
+Um dieses mithilfe des Computers darzustellen werden meistens \textit{Polygone} verwendet, welche aus drei oder mehr Punkten im Raum bestehen (meist \textit{Vertices } genannt, Einzahl: Vertex), die mit Kanten (\textit{Edges} genannt) verbunden sind.
+Die Fl\"ache, die durch die Vertices aufgespannt wird, wird \textit{Face} ganannt.
+Faces sind das eigentlich Wichtige f\"ur die Bildberechnung, oder auch \textit{rendern}.
+Rendern ist der Vorgang, bei dem aus den Positionen und Ausrichtung von Polygonen, Kamera und Lichtern das Bild berechnet wird. Der Programmteil, der daf\"ur verantwortlich ist, wird oft Render-Engine genannt. Ebenfalls sind die Normalen, Vektoren die \(90^\circ\) Grad auf den Faces stehen, wichtig damit das Render-Programm weiss, welche Seite innen und welche aussen ist.
+Eine sehr verbreitete Methode Polygon-Objekt-Daten zu organisieren und zu speichern ist das .obj-Format.
+Dabei werden die Vertices durch ihre kartesischen Koordinaten, die Faces durch die Indices der Vertices definiert.
+Ein einfaches Beispiel:\\
+\begin{addmargin}[13em]{1em}
+\texttt{%
+o simplesDreieck\\
+\# Koordinaten der Vertices: \\
+v 0.0 0.0 0.0 \\
+v 0.0 1.0 0.0 \\
+v 1.0 0.0 0.0 \\
+\# Angaben der Faces: \\
+f 1 2 3 \\
+}
+\end{addmargin}
+Nach dem o folgt der Name des Objektes. Alles nach dem \# ist ein Kommentar, also eine Bemerkung, die keinen Einfluss auf die eigentlichen Daten hat und nur f\"ur das Verst\"andnis  von anderen Personen da ist.
+Das v am Beginn einer Zeile markiert, dass die folgenden drei Zahlen die Position eines Vertex darstellen.
+Das f kennzeichnet, dass die folgenden Zahlen besagen, welche Indizes, wie miteinander zu einem Face verbunden werden sollen.
+Die Edges m\"ussen nicht spezifisch angeben werden, da ein Face die Information \"uber die dazugeh\"origen Edges ja bereits enth\"alt.
+Dadurch, dass dies genau so in ein Textdokument geschrieben wird, ist es auch f\"ur Menschen verst\"andlich, im Gegensatz zu bin\"aren Dateiformaten, die nur als Abfolge von 0 und 1 gespeichert werden.
+\\
+Eine andere Methode 3D-Objekte darzustellen sind die sogenannten Voxel. Das sind meist kleine W\"urfel, die das Volumen des Objektes ausf\"ullen. Diese Variante wird dort eingesetzt, wo das Volumen der Objekte selbst wichtig ist, etwa in der Medizin (z.B. MRI-Daten) oder in der Darstellung von komplexen Gel\"andeformen, etwa \"Uberh\"angen wie in Abb. 3.1
+Ein voxelbasierter Ansatz w\"are sicher interessant gewesen. Jedoch w\"urde das Resultat in Blender unhandlich sein, da Blender Voxel nicht direkt unterst\"utzt. Somit w\"urde die Landschaft - zumindest ohne weitere Verarbeitung - aus vielen W\"urfeln bestehen, welche selbst polygonal aufgebaut sind. Deshalb blieb ich bei den H\"ohenkarten.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.4]{Bilder_usw/ZauberCraft_3_thumb.png}
+\caption{Gel\"ande auf Voxelbasis \cite{voxel} }
+\label{fig:voxelPic}
+\centering
+\end{figure}
+
+%Trotzdem entschied ich mich f\"ur den Ansatz mit der H\"ohenkarte.
+%%%%Wieso entschied \begin{document} mich trotz dieser Vorteile nicht f\"ur eine Darstellung mit Voxel?
+%%%%Weil sie von Blender nicht unterst\"utzt wird und ich die H\"ohenkarte nur aus Ausgangspunkt nehme um ein 3D-Modell zu erstellen,  welches dann bearbeitet werden kann um H\"ohlen und \"Uberh\"ange zu erstellen.
+
+\chapter{\"Ubersicht \"uber Blender }
+3D-Programme sind meist eine teure Angelegenheit. So kosten die Marktf\"uhrer 3ds Max und Maya, beide von Autodesk, je 133\$ pro Lizenz und Monat.
+Hier kommt Blender ins Spiel, denn dies ist gratis und Open Source. Das heisst, dass alle den Quellcode einsehen und modifizieren d\"urfen.
+Auch wenn trotz schneller Weiterentwicklung hier und da einige Features fehlen, welche etwa in Maya vorhanden sind, ist es dennoch eine professionell einsetzbare Software. 
+Nicht zuletzt wegen der Vielzahl an Add-ons die es daf\"ur gibt - von der Generierung von B\"aumen bis hin zu deutlichen Ver\"anderungen in der Bedienung.
+
+Blender findet, wie die meisten anderen 3D-Grafik-Programme ein breites Einsatzspektrum. Von digitalen Spezialeffekten f\"ur Filme, \"uber die Gestaltung von Modellen f\"ur Spiele bis hin zu wissenschaftlichen Anwendungen. F\"ur Letzteres ist Blender besonders geeignet, da es seit 2003 unter einer \textit{Open Source Lizenz} ver\"offentlicht wird. Somit kann es nicht nur gratis heruntergeladen werden, sondern erlaubt auch die Modifikation des kompletten Quellcodes, also der Programmierung selbst, um Anpassungen zu machen.\\
+Dies ist jedoch oft gar nicht n\"otig, da es auch eine sogenannte API \footnote{Application Programming Interface} hat. Diese ist in der Programmiersprache Python geschrieben und erm\"oglicht es, jeden Befehl welcher auch von Hand ausgef\"uhrt werden k\"onnte, in ein Programm zu schreiben, um Prozesse zu automatisieren. Ein Beispiel daf\"ur w\"are etwa das zuf\"allige Einf\"arben aller Vertices, wie in Abb. \ref{fig:randomColor}. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.1]{Bilder_usw/untitled.png}
+\caption{Zuf\"allig eingef\"arbe Vertices einer Landschaft }
+\label{fig:randomColor}
+\centering
+\end{figure}
+                                                                                  
+\chapter{Eine kurze Einf\"uhrung ins Programmieren}
+%\begin{quotation}
+%\glqq Computers are like Old Testament gods: lots of rules and no mercy\grqq \\ \em{- Joseph Campbell} 
+%\end{quotation}
+Wer in Blender ein Add-on programmieren will hat nicht eine allzu hohe Einstiegsh\"urde.
+Zum einen gibt es bereits ein Layout f\"ur die Arrangierung der Oberfl\"ache namens \glqq Scripting\grqq. Zum anderen wird eine Info-Box angezeigt, in welcher - nebst Details zum Wert, den sie beeinflussen - auch der API-Befehl enthalten ist mit dem dieser in Python aufgerufen oder ver\"andert werden kann, wenn der Mauszeiger eine Weile \"uber einem Eingabefeld schwebt. Mit etwas \"Ubung muss also kaum mehr die Dokumentation neben Blender offen sein um an einem Add-on zu arbeiten.
+Durch einen Rechtsklick auf solche Eingabefelder l\"asst sich, zumindest der letzte Teil des Pfades zum Wert, in Python kopieren.
+Pers\"onlich habe ich jedoch einen Grossteil der Arbeit im Text-Editor \glqq Atom\grqq geschrieben, und daneben die Dokumentation ge\"offnet gehabt.
+
+
+Im folgenden Teil werden einige Programmierkonzepte beschrieben.
+Dies hat im Grunde nichts mit meiner Maturaarbeit zu tun und soll nur einen - hoffentlich nicht allzu steilen - Einstieg in das Programmieren erm\"oglichen, so dass die Code-St\"uckchen, die immer Mal wieder vorkommen werden, verstanden werden k\"onnen.
+\\
+Variablen sind ein wichtiger Teil des Programmierens. Dies sind Namen f\"ur Zahlen, Buchstabenabfolgen oder anderer Objekte. Um eine Variable in Python zu definieren wird der Name der Variable, dann ein \glqq =\grqq{ }und zum Schluss der Wert geschrieben. Um einen Wert auszugeben werden \glqq Print(Variable)\grqq{ }benutzt.
+Einige Beispiele in einer Python Konsole:
+\begin{lstlisting}
+>>> nummer1 = 6
+>>> nummer2 = 7
+>>> print(number1 * number2)
+42
+>>> a = "Apfel"
+>>> b = "Banane"
+>>> print(a+" & "+b)
+Apfel & Banane
+\end{lstlisting}
+
+Ein Konsolenfenster ist in Python daran zu erkennen, dass es ein \glqq \(>>>\)\grqq{ } zu Beginn jeder Zeile hat, ausser es handelt sich um eine Ausgabe.
+F\"ur komplexere Programme, die in Blender geschrieben werden, ist es ratsam den Text-Editor zu benutzen. 
+
+\begin{lstlisting}
+def begruessung (Name):  	   
+	#Ein hilfreicher Kommentar  
+	print("Willkommen ",Name)  
+	for i in range (0,100,50):
+		if i==50:
+			print("Hallo nochmals")
+		return(''Fertig'')
+\end{lstlisting}
+
+Die erste Zeile definiert eine Funktion mit dem Argument \glqq Name\grqq. Alles was einger\"uckt ist, ist ein Teil der Funktion.
+Ja - Begr\"ussung ist mit Absicht klein geschrieben. Denn Funktionen werden fast nie gross geschrieben.
+Ein Argument ist dabei eine Variable, die an eine Funktion \"ubergeben wird.
+Alles nach einem \# ist auch hier, wie im .obj Dateiformat ein Kommentar und nur zum Verst\"andniss f\"ur den Leser da.
+Es gibt auch die M\"oglichkeit mit drei Anf\"uhrungszeichen einen Kommentar \"uber mehrere Zeilen zu markieren.
+Die dritte Zeile ist eine Ausgabe in die Konsole, welche \glqq Willkommen\grqq{ }und dann den Wert von Name ausgibt.
+Die vierte Zeile ist eine For-Schleife, die i zuerst auf Null setzt und jedes Mal um 50 erh\"oht, bis i = 100 ist.
+Die f\"unfte Zeile enth\"alt eine Wenn-Bedingung. Alles was einger\"uckt ist, wird ausgef\"uhrt, wenn die Bedingung wahr ist. 
+Nebst dem == ,welches testet ob die beiden Werte genau gleich sind, existieren auch noch > (gr\"osser als), < (kleiner als), >= (gr\"osser gleich) und <= (kleiner gleich.).
+\texttt{Return} gibt dann den Wert, der danach genannt wird zur\"uck. Die Klammern sind dabei nicht unbedingt n\"otig.
+Wenn dieses Programm ausgef\"uhrt wird passiert - nichts.
+Denn es wird zwar eine Funktion definiert, sie wird jedoch nicht aufgerufen. Wenn nun jedoch die Zeile
+
+\begin{lstlisting}
+b = Begruessung("Hans Mustermann")
+\end{lstlisting}
+
+hinzugef\"ugt wird, wird die Funktion aufgerufen. Somit erscheint in dem Debugging Fenster, welches \"uber \glqq Window\grqq{ }in Blender aktiviert werden muss:
+
+\begin{lstlisting}
+Willkommen Hans Mustermann
+Hallo nochmals
+\end{lstlisting}
+
+und b hat nun den \texttt{return}-Wert, also ''Fertig''.
+
+Eine Funktion ist praktisch, da damit das Programm strukturiert und Abschnitte, die h\"aufig gebraucht werden, nicht jedes Mal neu geschrieben werden m\"ussen. Das Argument ist dabei eine Variable, welche nur innerhalb der Funktion aufgerufen werden kann, welche f\"ur den \"ubergebenen Wert steht.
+
+Ein sehr wichtiges Element (fast) jeder Programmiersprache sind Listen.
+Dies sind Objekte, die andere Objekte in einer fixen Reihenfolge enthalten. Die Elemente werden \"uber ihren Index angesprochen. Das erste Element hat dabei in (beinahe) jeder Sprache den Index 0.
+Es ist auch m\"oglich, dass Listen Listen enthalten. Je nachdem wie viele Listen ineinander verschachtelt sind, wird von 1-,2- (oder mehr) hierarchischen, manchmal auch dimensionalen Listen gesprochen.
+Ein Beispiel f\"ur eine 2-dimensionale Liste:
+\begin{lstlisting}
+>>> meineListe = [[1,2,3],[4,5,6],[7,8,9]]
+\end{lstlisting}
+
+Die Werte einer solchen werden folgendermassen angesprochen:
+\begin{lstlisting}
+>>> print(meineListe[1])
+[4,5,6]
+>>> print(meineListe[2][1])
+8
+\end{lstlisting}
+Der Wert der ersten eckigen Klammer ist also der Index der Liste 1. Ordnung, was in diesem Fall eine Liste ist.
+Der Wert in der zweiten ist der Index der 2. Ordnung, in diesem Fall die Zahl 8.
+Eine solche Liste ist also besonders geeignet, um ein Feld darzustellen.
+Denn die Werte der beiden Klammern entsprechen den X und Y Koordinaten des Feldes.
+
+Manchmal werden jedoch auch pseudozuf\"allige Werte ben\"otigt. Dies wird durch das Modul  \glqq random\grqq{ }erreicht.
+Ein Modul ist eine Pythondatei, deren Funktionen in eine andere importiert werden kann.
+Um ein solches zu importieren wird die Zeile
+\begin{lstlisting}
+from random import *
+\end{lstlisting}
+an den Beginn des Programms oder in die Konsole geschrieben.
+Das * steht daf\"ur, dass alles aus diesem Modul importiert wird. Es ist jedoch auch m\"oglich nur einzelne Funktionen zu importieren. Dazu listet man anstatt das Sternchen die gew\"unschten Funktionen, mit Koma getrennt, auf.
+Ein Pseudo-Zufallsgenerator ist ein Programm, dass eine Zahl als Input hat und Werte ausgibt, die zuf\"allig erscheinen. Das heisst, dass es keine periodischen Wiederholungen gibt.
+Sie sind Pseudo, da sie bei selbigem Input immer dieselbige Zahlenfolge ausgeben. Somit ist es nicht wirklich zuf\"allig.
+Normalerweise wird als Anfangszahl die Systemzeit genommen. Dieser Wert kann jedoch auch mit der Funktion \texttt{Seed()} definiert werden. Dies erm\"oglicht es die Zahlenfolge sp\"ater reproduzierbar zu machen.
+\begin{lstlisting}
+>>> from random import random,seed
+>>> seed(5)
+>>> random()
+0.6229016948897019
+>>> seed(2)
+0.9560342718892494
+>>> seed(5)
+>>> random()
+0.6229016948897019
+\end{lstlisting}
+
+Das ist auch schon alles, was ben\"otigt wird um mein Programm zu verstehen.
+
+
+\chapter{Die Landschaften}
+
+\begin{quotation}
+\glqq Art challenges technology, but technology inspires the art.\grqq \\ \em{- John Lasseter (Regisseur und Animator, u.a. Toy Story)} 
+\end{quotation}
+
+
+Dieses Zitat fasst in meinen Augen den Zusammenhang zwischen Technologie und Kunst sehr sch\"on zusammen:
+
+Jede technische Neuerung inspiriert Menschen zu neuen Ausdrucksformen und eventuell zum Verlangen nach noch fortgeschritteneren technischen M\"oglichkeiten.
+\\
+\\
+Es gibt bereits ein Add-on in Blender f\"ur die Generierung von Landschaften namens \glqq ant landscape\grqq .% 
+{ }Es f\"uhlt sich jedoch in vielen Bereichen etwas beschr\"ankend an, auch wenn es viele Parameter zum Ver\"andern der eigentlichen Landschaft enth\"alt. Denn fehlt jegliche integrierte M\"oglichkeit zum Berechnen von Flussverl\"aufen oder Seen. Auch m\"usste die Verteilung von B\"aumen im \glqq Weight Paint\grqq -Modus von Hand gezeichnet werden.
+Diese Probleme versuchte ich durch mein Add-on zu l\"osen.
+
+\section {Terrain}
+
+Zu Beginn wird eine M\"oglichkeit zur Generierung einer Landschaft ben\"otigt.
+\\
+Ein sehr oft verwendeter Algorithmus zur Erstellung von Terrain ist der sogenannte Perlin Noise. Erfunden wurde dieser 1982 durch Ken Perlin f\"ur einige der Spezialeffekte im Tron Film.
+Dieser ist jedoch schon als generierte Textur in Blender implementiert und steht im \glqq ant landscape\grqq{ }Add-on zur Auswahl.
+\\
+Deshalb wurde der Diamond-Square Algorithmus benutzt, welcher auch sehr beliebt ist. Dieser ist 1982 von Fournier, Fussell und Carpenter an der \glqq SIGGRAPH\grqq{ }\footnote{Special Interest Group on Graphics and Interactive Techniques} vorgestellt worden und erm\"oglicht die Erstellung von H\"ohenkarten, welche relativ gut aussehenden (Gebirgs-) Landschaften entsprechen. 
+\\
+Dieser funktioniert so:
+\begin{itemize}
+\itemsep0em
+\item Die minimale H\"ohe der Landschaft definieren. H gleich die H\"alfte davon setzen.
+\item Die Abnahme von H, r, definieren.
+\item Ein Quadrat mit zuf\"allig hohen Eckpunkten nehmen. Das Quadrat in regelm\"assigen Abst\"anden mit zuf\"alligen Werten besetzen. Dies dient dazu interessantere Landschaften zu kreieren.
+\item Den Diamond-Schritt: Den Mittelpunkt des Quadrates, die H\"ohe der Durchschnittsh\"ohe der umgebenden Punkte plus einen zuf\"alligen Wert zwischen -H und H geben.
+\item Der Square-Schritt:  Nun die Mittelpunkte der Seiten des ersten Quadrates berechnen, ebenfalls mit dem Durchschnitt der benachbarten Punkth\"ohen, zu welchem jeweils noch ein zuf\"alliger Wert, auch zwischen -H und H, addiert wird.
+\item H durch r teilen.
+\item Nun die letzten drei Schritte f\"ur jedes so entstandene Quadrat wiederholen, sofern die gew\"unschte Aufl\"osung noch nicht erreicht ist.
+\end{itemize}
+
+In Abb. \ref{DSFunktionsweise} ist dieser Prozess auf einem Feld der Gr\"osse 5 bildlich dargestellt.
+
+\begin{figure}[H]
+
+\fbox{\includegraphics[scale =0.03]{Bilder_usw/DiaSqua001.png}}
+\hspace{0.3cm}
+\fbox{\includegraphics[scale =0.03]{Bilder_usw/DiaSqua002.png}}
+\hspace{0.3cm}
+\fbox{\includegraphics[scale =0.03]{Bilder_usw/DiaSqua003.png}}
+\hspace{0.3cm}
+\fbox{\includegraphics[scale =0.03]{Bilder_usw/DiaSqua004.png}}
+\hspace{0.3cm}
+\fbox{\includegraphics[scale =0.03]{Bilder_usw/DiaSqua005.png}}
+
+\caption{Diamond-Square Funktionsweise}
+\centering
+\label{DSFunktionsweise}
+\end{figure}
+
+W\"urden Linien zwischen den zu berechnenden Punkten gezogen, so erg\"aben sich im ersten Schritt Quadrate, im zweiten sogenannte Diamanten. Daher der Name Algorithmus.
+
+F\"ur die Implementierung, also das Umsetzen in einem Programm, wurde zuerst eine zweidimensionale Liste der gew\"unschten Gr\"osse erstellt, mit zuf\"alligen Werten f\"ur die vier Ecken.
+
+Bei den Schritten, bei denen Quadrate entstehen (ausser beim Allerersten) ist jeweils einer der ben\"otigten Werte nicht auf dem Feld. Die L\"osung, die dazu in \cite{DSC} verwendet wurde war  jeweils den Wert auf der anderen Seite des Feldes zu nehmen. Daf\"ur schrieb ich eine Funktion, die jeweils den Rest der Division der X- und Y-Koordinate durch die Anzahl Punkte in der Liste zur\"uckgab. Somit konnte ich problemlos auch einen Wert f\"ur einen vorher zu grossen Index zur\"uckbekommen. Es verh\"alt sich so, als ob in jede Richtung unendlich viele Listen angeh\"angt w\"aren.
+In Python:
+
+\begin{lstlisting}
+def punktHolen(x,y,liste):
+    groesse = len(liste)
+    x=x%groesse
+    y=y%groesse
+    return(liste[x][y])
+\end{lstlisting}
+
+Die Funktion f\"ur das Ver\"andern des Zufallsbereiches ist so definiert:
+
+\begin{lstlisting}
+def zufall(self):
+    r=uniform(-H,H)/(r**schritt)
+    return r
+\end{lstlisting}
+
+Die Funktion \glqq uniform()\grqq{ }gibt eine zuf\"allige Zahl zwischen den beiden Argumenten zur\"uck. Sie ist Teil des \texttt{random}-Modules.
+Zwei Sternchen bedeuten \glqq hoch\grqq.
+Ich w\"ahlte also eine exponentielle Abnahme der Zufallsverschiebung.
+\\
+Leider hinterl\"asst der Diamond-Square-Algorithmus relativ unsch\"one Spitzen in der Landschaft. Vor allem bei einem hohen Wert f\"ur die Abnahme der maximalen Verschiebung von Schritt zu Schritt.
+Dies l\"asst sich mit einem relativ einfachen Trick beheben: Es wird jeder Punkt seinen Nachbaren angen\"ahert. \\
+Genauer: Ich bediene mich der gaussschen Unsch\"arfe. Wie der Name vermuten l\"asst, wird diese oft f\"ur das nachtr\"agliche Hinzuf\"ugen von Unsch\"arfe in Bildern verwendet. Dazu werden alle acht Nachbarfelder entsprechend einer gaussschen Verteilung gewichtet.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{Bilder_usw/GaussBlurExplained.png}
+\caption{Darstellung der Wertung der Felder mit gaussscher Verteilung}
+\label{fig:Gauss}
+\centering
+\end{figure}
+%\vspace{-5em}
+Nun werden die H\"ohen aller neun Punkte mit ihrer Gewichtung multipliziert und die Summen addiert. Diese Summe ist nun die neue H\"ohe f\"ur den mittleren Punkt.
+Der Benutzer kontrolliert die St\"arke durch die Anzahl an Iterationen der Funktion. Also wie oft sie angewendet wird.
+Zuerst nahm ich die Wertungen aus Abb. \ref{fig:Gauss}, dies fand ich jedoch zu stark; der Benutzer hatte nicht gen\"ugend Feinkontrolle \"uber die Rauheit des Terrains. So gewichtete ich den Mittelpunkt mehr, damit der Effekt schw\"acher wird.
+Das Verfahren l\"asst sich folgendermassen implementieren:
+\\
+\begin{lstlisting}
+def gaussscheUnschaerfe(schritte):
+ for n in range(schritte):
+   for x in range(groesse):
+     for y in range (groesse):
+       setVert(x,y,
+       (vert(x-1,y-1)+2*vert(x-1,y)+vert(x-1,y+1) +
+        vert(x,y-1)+12*getVert(x,y)+2*vert(x,y+1) +
+        vert(x+1,y-1)+2*vert(x+1,y)+vert(x+1,y+1))/24)
+\end{lstlisting}
+Ich habe also die Punkte jeweils mit dem Z\"ahler multipliziert und durch den Nenner geteilt.
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.2]{Bilder_usw/notSmoothLandscapepng.png}
+\includegraphics[scale = 0.2]{Bilder_usw/twiceSmoothLandscapepng.png}
+ \caption{Vergleich einer Landschaft ohne und mit zweifachem Smoothing}
+  \label{fig:LandschaftSmoothing}
+\centering
+
+\end{figure}
+
+Wie in Abb. \ref{fig:LandschaftSmoothing} zu sehen ist, erf\"ullt diese Funktion ihren Zweck und l\"asst die Landschaften nicht ganz so zackig aussehen.
+
+\section {Seen}
+Das Wasser ist ein sehr wichtiger Aspekt jedes Landschaftsbildes. Ebenso dessen Auswirkung, die Erosion.
+ Blender hat eine integrierte Wasser-Simulation, welche das Lattice-Boltzmann-Verfahren verwendet.
+ Dieses basiert darauf, dass das Wasser in Partikel eingeteilt wird, welche Masse, Geschwindigkeit, eventuell thermodynamische Eigenschaften haben und kollidieren k\"onnen.
+ Es ist ein sehr gutes und ziemlich effizientes Modell f\"ur die Simulation auf relativ kleinen R\"aumen, wie etwa einer Turbine oder eines Tropfens.\\
+ Jedoch ist es ungeeignet, um ein ganzes Fluss- und Seensystem zu simulieren, da es viel zu viel Speicher ben\"otigt. 
+ Eine gute L\"osung w\"are gewesen, eine \glqq shallow water\grqq -Simulation zu implementieren, ein Ansatz, bei dem nur die Oberfl\"achenver\"anderung berechnet wird.
+ Allerdings ist das eher eine Maturaarbeit f\"ur sich.
+ Deshalb habe ich selbst eine simple Wassersimulation geschrieben.
+Sie basiert auf der Tatsache, dass Wasser vom Himmel f\"allt, in Form von Niederschlag, herunterfliesst so lange nichts im Wege ist und ein Teil des Wassers dann verschwindet (in der Realit\"at durch Verdunstung oder Versickerung).
+Jeder Schritt der Simulation besteht aus drei Unterschritten:
+
+\begin{itemize}
+\itemsep0em
+\item Dem Regnen: Alle Punkte auf der Wasserkarte werden um einen bestimmten Wert erh\"oht.
+\item Dem Fliessen: Hier wird nun f\"ur jeden Punkt gepr\"uft, ob die Summe der Wasserkarte plus der Wert der Gel\"andeh\"ohe an diesem Punkt,{ }\( \lambda \), gr\"osser ist als die selbe Summe ihrer Nachbarn. Wenn dies der Fall ist, wird ermittelt wie viele Nachbaren eine tiefere Summe haben. Daraus wird berechnet, wie viel Wasser jeder benachbarte Punkt erh\"alt, \( \omega \).
+\item \begin{itemize}
+\item F\"ur jeden der vier Nachbarn wird nun getestet:
+\item Ist die Summe aus dem Wasser des Nachbars plus \( \omega \){ }Gel\"andeh\"ohe dieses Punktes tiefer als \( \lambda \).
+\item Nun wird nochmals f\"ur alle vier Nachbaren getestet:
+\item Wenn die Summe aus dem Wasser des Nachbars plus \( \omega \){ }plus Gel\"andeh\"ohe dieses Punktes h\"oher ist als \( \lambda \), wird der Wasserstand des entsprechenden Punktes um \( \frac{1}{2}\omega \) erh\"oht, und das Wasser des Ausgangspunktes um diesen Wert abgesenkt.
+\end{itemize}
+\item Am Ende jedes Schrittes wird das Wasser auf jedem Feld noch um einen bestimmten Wert erh\"oht.
+\end{itemize}
+
+Dieser ziemlich einfache Ansatz f\"uhrt bei wohl gew\"ahlten Anfangsbedingungen zu sehr akzeptablen Resultaten, wie in Abb. \ref{fig:WaterSim} zu sehen ist.
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.4]{Bilder_usw/Left_1000TimesFlow_right10Times.png}
+\centering
+ \caption{Wasser Simulation: Links 1000 Zyklen und rechts 10.}
+ \centering
+  \label{fig:WaterSim}
+\centering
+\end{figure}
+
+Jedoch muss nicht viel an den Parametern ver\"andert werden, um weniger realistische Resultate zu bekommen. In Abb. \ref{fig:WaterSimSchlecht} wurde etwa die Wasserzunahme deutlich h\"oher als die Abnahme gew\"ahlt.
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.4]{Bilder_usw/WasserSimSchlect.png}
+ \caption{Wassersimulation mit unvorsichtig gew\"ahlten Parametern}
+  \label{fig:WaterSimSchlecht}
+\centering
+\end{figure}
+
+Eine minimale Optimierung, die ich vorgenommen habe ist, dass ich anstatt in jedem Schritt Wasser hinzugebe und wegnehme, dies ganz zu Beginn und ganz am Ende erledige.
+Ich brachte es jedoch auch bis zum Ende nicht zustande, dass die Seen wirklich wie Seen und nicht wie Gletscher aussahen. Gerade auf Landschaften mit grossen H\"ohendifferenzen ist dies ein Problem.
+
+\section{Fl\"usse}
+
+Zu Beginn \"uberlegte ich mir, dass f\"ur die Generierung der Fl\"usse an ein paar zuf\"alligen Punkten mehr Wasser entstehen k\"onnte. Jedoch w\"aren dies sehr breite Fl\"usse gewesen und die Simulation h\"atte wieder \"uber einige hundert oder gar tausend Zyklen laufen m\"ussen, um vern\"unftige Resultate zu bekommen, was in Python zu lange dauerte, f\"ur mich.
+Deshalb werden die Fl\"usse nach den Seen hinzugef\"ugt. Sie beginnen an einem zuf\"alligen Ort, in einem einstellbaren H\"ohenbereich und w\"ahlen von dort den Weg mit dem leichtesten Widerstand. Sie gehen also jeweils zum tiefsten benachbarten Punkt. Dies so lange, bis sie auf einen Punkt treffen auf dem ein See ist.
+Alternativ h\"atte auch eine Karte des gesamten Durchflusses des Wassers auf jedem Punkt erstellt werden k\"onnen, um dann jeweils zum Punkt mit h\"oherem Gesamtdurchfluss zu gehen, dies war Herrn Rollés Vorschlag.
+Auch eine h\"ohere Wahrscheinlichkeit f\"ur das Erscheinen von Flussquellen am Rande von Seen, welche genug hoch sind, w\"are denkbar gewesen.
+\\
+Ihr Verlauf wird dabei auf einer Karte gespeichert, wobei der Wert eines Punktes auf dieser Jedesmal erh\"oht wird, wenn der Pfad eines Flusses dort vorbei kommt.
+Diese wird dann benutzt, um alle Vertices abzusenken, die der Fluss \"uberquert. Mithilfe des \glqq Proportional\grqq-Editings, welches umliegende Punkte in einem bestimmten Radius \glqq mitverschiebt\grqq, entsteht dadurch ein Flussbett.
+Ebenfalls wird der Flussverlauf sogenannter  \glqq Path\grqq{ }in Blender gespeichert. Dieser erlaubt es dem Benutzer mithilfe  \glqq Curve\grqq-Modifiers ein Objekt der Path-Form anzuschmiegen.
+
+\begin{figure}[H]
+\includegraphics[scale =0.4]{Bilder_usw/Rivers.jpg}
+\centering
+ \caption{Fr\"uher Prototyp einer Flusssimulation}
+  \label{fig:River}
+\centering
+\end{figure}
+
+Zumindest war dies meine Idee. Die Zeit reichte jedoch nicht aus, um die Fl\"usse vollst\"andig und fehlerfrei zu implementieren. \ref{fig:River} ist ein Bild eines grossen Flusssystems, bestehend aus etwa 250 Quellen, aus einer relativ fr\"uhen Version.
+
+\section{Erosion}
+Die Landschaften haben bisher zwar nach Hochgebirge ausgesehen, um eine \"uberzeugende H\"ugellandschaft zu generieren, werden jedoch steilere Berge und vor allem flachere T\"aler ben\"otigt. Gletscher hatten in den Eiszeiten Jahrtausende Zeit dies zu erreichen. Ich will jedoch nicht so lange vor dem Computer sitzen und auf Gletscher hoffen. Eine M\"oglichkeit zur Erosion muss her.
+Urspr\"unglich koppelte ich die Erosion mit der Wassersimulation. Das verwendete Prinzip ist folgendes gewesen:
+Das Wasser hat eine maximale S\"attigung erhalten, welche bestimmt wie viel Material pro H\"oheneinheit  Wasser gel\"ost werden kann.
+Eine Sedimentkarte dient als Speicher daf\"ur, wie viel Material wo gel\"ost ist. Jeder Punkt auf der Sedimentkarte hat Material entsprechend der Wasserflussrichtung an seine Nachbaren abgeben.
+In jedem Schritt der Wassersimulation wurde an jedem Punkt gepr\"uft ob noch Material gel\"ost werden kann. Ist dies der Fall, wird das Terrain um einen Wert proportional zur Differenz zwischen Wasserstand und Wasserstand mal S\"attigung gesenkt, und die Sedimentkarte an dieser Stelle um diesen Wert erh\"oht.
+Ist jedoch der Wert der Sedimentkarte h\"oher als Wasser mal S\"attigung, dann wird der \"Uberschuss dem Terrain hinzugerechnet und der Sedimentkarte abgezogen.
+Das Resultat war jedoch ern\"uchternd. Es ben\"otigte viele hundert Zyklen der Berechnung, damit \"uberhaupt wirklich Unterschiede zu sehen waren. Diese waren auch nicht gerade von erhoffter Qualit\"at. Zwar wurden die T\"aler etwas breiter und die Bergw\"ande steiler, aber es gab auch immer wieder Spitzen in der Landschaft.
+Also suchte ich eine andere M\"oglichkeit der Erosion. 
+Diese fand ich in der \glqq thermalen\grqq-Erosion, so wurde diese Variante zumindest in \cite{erosion} gennant.
+Die Idee ist, dass der h\"ochste Winkel der Geraden durch einen Punkt und dessen Nachbarn zur Z-Achse, berechnet wird, \( \theta\). Ist dieser h\"oher als ein durch den Benutzer bestimmter Winkel, so wird der obere Punkt abgesenkt und der untere erh\"oht.
+
+\begin{figure}[H]
+  \centering
+  
+ \includegraphics[scale = 0.17]{Bilder_usw/WithoutErosion.png}
+   \centering
+ \includegraphics[scale = 0.17]{Bilder_usw/WithErosion.png}
+   \centering
+ \caption{Oben: Ohne Erosion Unten: Mit invertierter Erosion}
+  \centering
+  \label{fig:Erosions}
+\end{figure}
+
+In \cite{erosion} wird ebenfalls noch die \glqq verbesserte\grqq{ }thermale-Erosion genannt. Bei dieser wird der untere Punkt abgesenkt, wenn der Winkel  \( \theta\) niedriger ist.
+Dies f\"uhrt zu einer canyonartigen Abstufung im Gel\"ande. Ich nannte diese Variante jedoch invertierte Erosion in meinem Programm, da der Unterschied nur ist, dass Material verschoben wird, wenn der Winkel im Terrain niedriger ist. Also das Gegenteil der Normalen.
+
+Durch das nachtr\"agliche Hinzuf\"ugen von gaussischer Unsch\"arfe, wird eine seichtere Abstufung erreicht. Es entstehen steilere Flanken und flachere T\"aler.  Also das, was auch bei der an die Wassersimulation gebundene Erosion das Ziel war - nur um den Faktor 100 schneller.
+Das Resultat ist in Abb. \ref{fig:Erosions} zu sehen.
+
+Beide Versionen sind im Add-on implementiert. Das Umschalten funktioniert \"uber ein H\"akchen. 
+
+
+\section {W\"alder und B\"aume}
+
+Es war schon zu Beginn klar, dass ich den Wad als sogenannte Vertex Gruppe ausgeben wollte. Dies ist im Prinzip eine Maske f\"ur Vertices. Diese erhalten alle eine Gewichtung zwischen 0 und 1. In Blender wird das farblich dargestellt wenn sich ein Objekt im \glqq Weight Paint\grqq-Modus befindet. 0 ist dabei blau und 1 rot, Werte dazwischen entsprechen dem Farbkreis, im Uhrzeigersinn gekennzeichnet.
+
+\begin{figure}[H]
+\includegraphics[scale = 0.3]{Bilder_usw/weightPaint.png}
+ \centering
+ \caption{ \glqq Tree Height\grqq-Vertex Gruppe generiert durch mein Add-on}
+  \centering
+  \label{fig:TreeHeight}
+\end{figure}
+
+F\"ur die Verteilung der W\"alder hat mir Herr Rollé den Tipp gegeben eine ver\"anderte Version des \glqq Game of Life\grqq{ }zu verwenden.
+Dies ist ein vom Mathematiker Conway entworfenes System. 
+Es basiert darauf, dass in einem regelm\"assigen Gitter die Quadrate jeweils mit einem Wert von \texttt{lebendig} oder \texttt{tot} versehen werden.
+Nun werden diese Werte durch die Anzahl Nachbaren ver\"andert. \\
+Hat ein lebendiges Quadrat zu viele oder zu wenige Nachbaren, so wird dessen Wert auf \texttt{tot} gesetzt. Wenn ein totes Quadrat genau drei Nachbaren hat, wird sie \texttt{lebendig}.
+Bei 2 oder 3 Nachbaren \"uberlebt eine Zelle.
+\begin{figure}[H]
+\includegraphics[scale = 0.4, angle = -90]{Bilder_usw/gol.png}
+ \centering
+ \caption{R-Pentomino Abfolge der ersten f\"unf Schritte im Game of Life}
+ \centering
+  \label{fig:gol}
+\end{figure}
+Die Figur aus Abb. \ref{fig:gol} ist eine Abfolge die aus der Anwendung dieser Regeln entstand. Erst nach 1103 Schritten w\"urde diese eine oszillierende Struktur bilden, also eine sich periodisch wiederholende Struktur.\\
+Das Game of Life bildet zwar interessante Struktur, jedoch sieht es nicht wie eine typische Verteilung eines Waldes aus.
+Die empfohlene Anpassung ist eigentlich eine Vereinfachung: Die Anzahl lebendiger Nachbaren wird angeschaut und der Zustand entsprechend gesetzt, ohne Ber\"ucksichtigung des vorherigen Zustandes.
+Da ich im Rahmen des Informatikunterrichts bei Herrn Rollé bereits das  \glqq originale\grqq{ }Game of Life programmiert hatte, konnte ich die Regeln sehr schnell ausprobieren und nach meinem Gefallen anpassen.
+Nach etwas Experimentieren entschied ich mich f\"ur folgende Regeln:\\
+Wenn das Quadrat weniger als 4 Nachbaren hat, wird es auf \texttt{tot} gesetzt, bei genau 4 wird der Zustand jeweils umgeschaltet, und bei mehr wird es auf \texttt{lebendig} gesetzt.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.5]{Bilder_usw/golAltered.png}
+ \caption{Bildschirmfoto vom Game of Life mit meinen Regeln}
+  \label{fig:golAlt}
+\centering
+\end{figure}
+
+Abb. \ref{fig:golAlt} ist ein Bildschirmfoto aus dem Game of Life Programm aus dem Informatikunterricht mit den alternativen Regeln. Zwar gibt es hier und da Formen, die etwas gar rechteckig
+ sind, W\"alder, aber insgesamt ist es akzeptabel.
+
+Das Erstellen der Waldverteilung in meinem Programm l\"asst das Game of Life mit einstellbarem Prozentsatz der am Anfang lebendigen Quadrate laufen.
+Dann erh\"alt jeder Punkt, der \texttt{lebendig} ist den Wert 1 auf der Baumverteilungs-Vertex-Gruppe, wenn das Terrain an dieser Stelle nicht steil ist, es im Bereich ist wo B\"aume wachsen sollen und sich dort weder ein Fluss noch ein See befindet.
+Die Gewichtung f\"ur die Vertex-Gruppe, welche dazu dient, die Abnahme der Gr\"osse von B\"aumen zur Waldgrenze hin zu Simulieren habe ich folgendermassen berechnet:
+\( \delta H+s\).{ }
+Wobei das \( \delta\)H f\"ur den Abstand des Punktes zur oberen und und das s die Minimalh\"ohe der B\"aume darstellt.
+
+F\"ur das Nutzen der Weight Paint Texturen als Verteilungs- und Gr\"osseninformation f\"ur B\"aume muss von Hand ein Partikelsystem angelegt werden.
+Die Erstellung der B\"aume selbst wird dem User \"uberlassen, da es bereits ein sehr umfangreiches Add-on genau zu diesem Zweck in Blender gibt.
+
+\section{Material}
+Um das beste Erlebnis mit Blender zu haben, sollte die Render-Engine auf  \glqq Cycles\grqq{ }gewechselt werden - vor allem bei Szenen, in denen die Beleuchtung oder die Obefl\"ache der Objekte wichtig ist.
+Denn nur so ist der Zugriff auf den sehr m\"achtigen Node-Editor gew\"ahrleistet. 
+F\"ur diesen generiert mein Add-on eine Textur f\"ur Landschaft und Wasser. Dies soll dem Benutzer die Arbeit abnehmen, jedes Mal ein Material zu kreieren.
+Dazu wurde zuerst ein Solches von Hand erstellt. Danach wurde es St\"uck f\"ur St\"uck in ein Programm geschrieben. Dazu wird zuerst ein \glqq Node\grqq. definiert. Dies sind K\"astchen, welche einige einstellbare Werte haben. Ebenfalls haben sie Ein- und Ausg\"ange, \"uber die sie verbunden werden. Welchen Typ sie annehmen ist dabei farbig gekennzeichnet. Ein RGB Wert - also ein Farbwert bestehend aus rot, gr\"un und blau, wird gelb repr\"asentiert. Ein Zahlenwert grau, Vektoren violett. Wenn jedoch ein Farb-Output in einen Zahlen-Input f\"uhrt, so wird schwarz als 0 und weiss als 1 interpretiert.
+Generell sind die wichtigsten Nodes die Shader-Nodes und der Material-Output-Node. Erstere sind f\"ur die Obefl\"achenbeschaffenheit und Farbe eines Objektes zust\"andig. Sie k\"onnen auch mithilfe des \glqq Mix-Shader-Nodes\grqq{ }gemischt werden. Der Material-Output-Node hat nur Inputs. Dies liegt daran, dass er das Ende darstellt.
+Ein wichtiger Node f\"ur das generierte Material in meinem Add-on, ist der Geometry Node. Vorallem dessen \glqq Normal\grqq-Output. Dieser gibt einen RGB Wert aus, wobei der rote Kanal f\"ur den Winkel der Normale zur X-, der gr\"une f\"ur den Winkel zur Y- und der blaue f\"ur den Winkel zur Z-Achse steht.
+Ebenfalls wichtig ist der \glqq Color-Ramp-Node\grqq. Dieser nimmt einen Wert zwischen 0 und 1 als Input und gibt den entsprechenden Wert auf einem benutzerdefinierten Farbverlauf aus.
+Wird nun also der blaue Kanal eines Outputs eines Geometry-Nodes, welcher durch einen Color-Ramp-Node verarbeitet wird, verwendet, um zwei Shader-Nodes zu mischen, kann mithilfe der Color-Ramp der Winkel zur Z-Achse bestimmt werden, bis zu welchem welcher Shader angezeigt wird.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{Bilder_usw/NodeExample1.png}
+\vspace{2cm}
+\includegraphics[width=\textwidth,keepaspectratio]{Bilder_usw/NodeExample2.png}
+ \caption{Bildschirmfoto von Node-Editor und Viewport}
+  \label{fig:Node}
+\centering
+\end{figure}
+
+Das generierte Material f\"ur das Terrain enth\"alt zwei nicht verwendete Nodes. Ein Inverse-Node, welche Farben invertieren, also zur komplement\"ar Farbe machen kann und ein unverbundener Color-Ramp-Node. Wenn der \glqq Pointiness\grqq-Output des Geometry-Nodes mit dem Inverse-Node-Input, diesen mit dem Color-Ramp-Input und dessen Output mit dem \glqq Displacement\grqq-Output verbunden wird, so ist die M\"oglichkeit vorhanden dem Gel\"ande etwas mehr Details zu geben. Jedoch ist es etwas schwierig genau die richtige Einstellung zu finden, damit es gut aussieht. 
+
+\section {Benutzeroberfl\"ache}
+
+Die Benutzeroberfl\"ache ist der wichtigste Aspekt der Benutzer-Erfahrung, denn es ist der prim\"are Weg, \"uber den der User mit dem Programm interagiert. Etwas Planung in das Interface zu investieren lohnt sich also, denn (fast) niemand w\"urde heute noch ein Betriebssystem oder ein Programm per Befehlszeileneingabe ansteuern wollen.
+Es bedarf einer so genannten GUI, eines Graphical User Interfaces.
+
+Blender hat ein eigenes, auf OpenGL basiertes GUI-System. Es bietet viele Features die \"uber Python aufrufbar sind. Ich gehe hier nicht allzu tief darauf ein, denn wer sich interessiert findet viele Code-Beispiele und Tutorials zu diesem Thema auf dem Internet.
+Hier werden eher einige Gedanken erkl\"art, die ich mir gemacht hatte.
+
+Zuerst etwas zur Aufteilung der vielen Werte.
+Diese wurden in die drei Kategorien Terrain \& Erosion, Wasser und Wald unterteilt. Die Modi, welche \"uber ein Drop-Down-Menu ausgew\"ahlt werden, zeigen jeweils andere Werte zum Einstellen. Somit wird der Benutzer nicht zu sehr \"uberschwemmt mit Zahlenfeldern.
+Ebenfalls hat er \"uberall die M\"oglichkeit auf die H\"ackchen zu klicken, um zu definieren, was geupdated wird. Somit kann die Berechnung von Erosion, Wasser und Wald einzeln an- und abgestellt werden und es muss nicht mehr jedes Mal alles berechnet werden, wenn ein Wert ver\"andert wird.\\
+Da meine Implementation des Diamond-Square-Algorithmus nur Felder der Gr\"osse \( 2^{n}+1\) erlaubt, gibt der Benutzer n an. Die entstehende Anzahl Vertices pro Seite der Landschaft und insgesamt wird rechts neben dem entsprechenden Eingabefeld angezeigt.
+
+\chapter{Fazit}
+
+Im Folgenden vergleiche ich ein Bild auf Basis einer generierten - mit meinen Seen - und eines auf Basis einer realen H\"ohenkarte - mit einer Ebene als See. Die H\"ohenkarte wurde von \cite{Terrain} heruntergeladen.
+In beiden Bildern wurde das selbe Material und die gleich positionierte Belichtung verwendet. 
+\begin{figure}[H]
+\centering
+
+\includegraphics[width=0.85\textwidth,keepaspectratio]{Bilder_usw/untitledjhgfjhgf.png}
+\includegraphics[width=0.85\textwidth,keepaspectratio]{Bilder_usw/untitledfgsdfgd.png}
+
+ \caption{Oben: Landschaft auf Basis von realer H\"ohenkarte Unten: Landschaft aus meinem Add-on}
+  \label{fig:Node}
+\centering
+\end{figure}
+Wie zu sehen ist sind die Seen in meiner Landschaft nicht gerade gelungen. Sie sind zu klein und sind oft sehr steil.
+Das Terrain selbst ist jedoch realistisch.
+
+Im Grunde bin ich einigermassen zufrieden mit der Arbeit.
+
+Ein immer wiederkehrendes Problem bei der Programmierung war jedoch, dass ich f\"ur einige Dinge deutlich l\"anger hatte als gedacht. Einer der Hauptgr\"unde daf\"ur, war das Suchen nach API-Befehlen. Etwa der Befehl zum Setzen des Gewichtes eines Vertex erscheint zwar in der Dokumentation, jedoch nicht was f\"ur Variablen er entgegen nimmt. 
+
+
+
+Wenn ich noch mehr Zeit zur Verf\"ugung gehabt h\"atte, w\"urde ich zuerst die Fl\"usse implementieren. Danach g\"abe es noch einige Verbesserungen an den Seen zu machen. Etwa  jeder Punkt eines Sees auf den tiefsten Punkt seines Randes setzen. Dadurch w\"aren die Seen flach und erinnerten nicht mehr so sehr an Gletscher. Auch die M\"oglichkeit, den Rand eines Flusses oder Sees als Vertex Gruppe zu speichern w\"are nett. 
+Interessant w\"are die H\"oheninformationen auf Kugeln zu projezieren, wie dies das \glqq Ant-Landscape\grqq-Output auch kann, um Planeten zu generieren.
+Der Segen und der Fluch dieses Themas ist, dass alles immer mehr und noch besser gemacht werden k\"onnte - w\"are bloss die Zeit dazu.
+
+
+Wer \"ubrigens das Add-on oder diesen Text als PDF downloaden und benutzen will, kann dies unter \url{https://github.com/RomanRiesen/Blender_Landscape_AddOn} tun. Dort werde ich auch noch allf\"alige weitere Versionen - als solche markiert - speichern.
+
+\chapter{Bilder}
+In diesem Kapitel befinden sich einige Bilder, welche im Rahmen meiner Maturaarbeit entstanden sind.
+\vspace{4cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth, keepaspectratio]{Bilder_usw/TurtleLandscape.png}
+\caption{Bild aus einem Turtle Programm, welches als \"Ubung diente}
+\label{}
+\centering
+\end{figure}
+
+
+\begin{figure}[b]
+\centering
+\includegraphics[scale = 0.25]{Bilder_usw/array.png}
+\centering
+\caption{Eine Landschaft mit 2 Array-Modifiern}
+\centering
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[scale = 0.25, keepaspectratio]{Bilder_usw/mandalaOrSomething2.png}
+\caption{Auch mit 2 Array-Modifiern, jedoch interessanter eingef\"arbt}
+\label{}
+\centering
+\end{figure}
+
+
+\begin{figure}[b]
+\centering
+\includegraphics[width=\textwidth, keepaspectratio]{Bilder_usw/fromDesertToMountains.png}
+\caption{W\"uste mit Bergen im Hintergrund}
+\label{}
+\centering
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{Bilder_usw/ForrestButBadLooking.png}
+\caption{Die Waldverteilung wurde durch das Add-on berechnet}
+\label{}
+\centering
+\end{figure}
+
+\begin{figure}[b]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{Bilder_usw/asdfasdf.png}
+\caption{Etwas polygon\"armerer Ansatz}
+\label{}
+\centering
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth,keepaspectratio]{Bilder_usw/bigMountainFromLAndscapepng.png}
+\caption{Herbstlicher Wald in kahler Berglandschaft}
+\label{}
+\centering
+\end{figure}
+
+
+\chapter {Danksagung}
+
+Ich m\"ochte mich zuerst bei Herrn Rollé bedanken f\"ur die Unterst\"utzung und die Tipps, die er mir gegeben hat. 
+Nat\"urlich auch bei allen, die mich sonstig unterst\"utzt haben. Ob mit Ideen oder R\"uckmeldungen.
+Speziell meiner Mutter f\"ur die orthografische Aufmerksamkeit.
+Zum Schluss noch bei den Personen der Blender Foundation, dass sie so eine m\"achtige Software fleissig erweitern und verbessern.
+
+\twocolumn
+\begin{thebibliography}{999}
+
+\bibitem {voxel} Voxellandschaft: \\
+\url{http://www.blitzbasic.com/Community/posts.php?topic=93982} \\ 3.10.2015
+\bibitem{PN} Perlin Noise: \\ \url{https://de.wikipedia.org/wiki/Perlin-Noise} \\ 
+2.9.2015
+\bibitem{DS} Diamond Square: \\ \url{http://www.paulboxley.com/blog/2011/03/terrain-generation-mark-one} \\ 
+4.5.2015 \\
+\bibitem{DSC} Diamond Square: \\
+\url{http://www.bluh.org/code-the-diamond-square-algorithm/}
+8.10.2015
+\bibitem {LBM} Lattice-Boltzmann-Methode:\\
+\url{https://de.wikipedia.org/wiki/Lattice-Boltzmann-Methode} \\
+  8.9.2015
+\bibitem {erosion} Erosion:\\
+\url{http://web.mit.edu/cesium/Public/terrain.pdf}  \\ 
+30.5.2015
+\bibitem{GOL} 
+Game of Life: \\ 
+\url{https://de.wikipedia.org/wiki/Conways_Spiel_des_Lebens} \\ 
+5.9.2015
+\bibitem{Terrain}
+ H\"ohenkarten der ganzen Welt: \\
+ \url{http://terrain.party/} \\ 
+8.10.2015
+\end{thebibliography}
+
+\end{document}
+
+
+
+
+
