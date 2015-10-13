@@ -717,7 +717,7 @@ class createSeas:
 #    USER INTERFACE
 
 modes = [('0', 'Terrain & Erosion', 'Create your basic terrain.'),
-     ('1', 'Water', 'Add water (basic rivers and seas).'),
+     ('1', 'Water', 'Add water (basic seas).'),
      ('2', 'Forest', 'Generate vertex group for the distribution and height of trees (or other objects).')]
 
 
@@ -838,8 +838,9 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
 
 
     def draw (self,context):
-
+        
          layout = self.layout
+         
          layout.prop(self,'mode')
 
          if self.mode == '0':
@@ -870,18 +871,18 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
                 col.prop(self,'randomness')
                 col.prop(self,'featureSize') 
 
-                layout.label("Erosion:")
-                box = layout.box()
-                split = box.split()
-                col = split.column()
-                col.prop(self,'erosionSteps')
-                col.prop(self,'erosionAngle')
-                col=split.column()
-                col.prop(self,'erosionIsInverted')
-                col.prop(self,'erosionAmount')
-                split = box.split()
-                col = split.column()
-                col.prop(self,'smoothnessAfterErosion')
+            layout.label("Erosion:")
+            box = layout.box()
+            split = box.split()
+            col = split.column()
+            col.prop(self,'erosionSteps')
+            col.prop(self,'erosionAngle')
+            col=split.column()
+            col.prop(self,'erosionIsInverted')
+            col.prop(self,'erosionAmount')
+            split = box.split()
+            col = split.column()
+            col.prop(self,'smoothnessAfterErosion')
 
          if self.mode == '1':
 
@@ -940,15 +941,22 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
          bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN', center='MEDIAN')
 
     def adoptTerrain (self,obj):
-         global modes #sorry, had to use globals here. Well not HAD to but it's justifiable. 
-         modes = [('1', 'Water', 'Add water (basic rivers and seas).'),('2', 'Forest', 'Generate vertex group for the distribution and height of trees (or other objects).')]
-         self.mode = '1'
          self.terrainObject = obj
+         self.blenderSize = obj.dimensions.x #Assuming it is a square.
          self.selfCreatedTerrain = False
          angleAndHeightMap = createAngleAndHeightMapOfTerrain(self.terrainObject)
          self.angleMap = angleAndHeightMap.angleMap
          self.terrainVerts = angleAndHeightMap.heightMap
+         if self.update_Erosion:
+            erosion = thermalErosion(self.terrainVerts,self.erosionAmount,self.erosionSteps,self.erosionAngle,self.erosionIsInverted)
+            self.terrainVerts = erosion.verts
+            myGaussianBlur(self.terrainVerts,self.smoothnessAfterErosion)   
+         name = obj.name
+         for object in bpy.context.scene.objects:
+            object.select = object.type == 'MESH' and object.name == name#Delete object with name name
+         bpy.ops.object.delete()
          self.size = len(self.terrainVerts)
+         self.terrainObject = blenderOutput(self.terrainVerts,obj.name,self.blenderSize)
          myGaussianBlur(self.terrainVerts,self.smoothnessAfterErosion)
          
          bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN', center='MEDIAN')
@@ -961,18 +969,14 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
         obj = bpy.context.active_object
         if obj == None:
            self.createTerrain()
+        elif obj.type == 'MESH':
+                self.adoptTerrain(obj)      
         else:
-            if obj.type == 'MESH':
-                self.adoptTerrain(obj)
-
-            else:
-                self.createTerrain()
+            self.createTerrain()
         
         if len(self.terrainObject.data.materials) < 1:
-            self.selfCreatedMaterial = True
             self.terrainMaterial = createCyclesTerrainMaterial()
             self.terrainObject.data.materials.append(self.terrainMaterial)
-        else: self.selfCreatedMaterial
         
         bpy.context.space_data.viewport_shade = 'MATERIAL'
 
@@ -999,14 +1003,12 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
         obj = bpy.context.active_object
         if obj == None:
            self.createTerrain()
-        else:
-            if obj.type == 'MESH':
+        elif obj.type == 'MESH':
                 self.adoptTerrain(obj)
-
-            else:
-                self.createTerrain()
-        
-        if self.selfCreatedMaterial:
+        else:
+             self.createTerrain()
+      
+        if len(self.terrainObject.data.materials) < 1:
             self.terrainMaterial = createCyclesTerrainMaterial()
             self.terrainObject.data.materials.append(self.terrainMaterial)
  
@@ -1014,8 +1016,9 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
             seas = createSeas(self.terrainObject,self.terrainVerts,self.waterSteps,self.rainAmount,self.evapAmount,self.waterSmoothing)
             self.seaMap = seas.seaMap
             self.waterObject = seas.waterObject
-            self.waterMaterial = createCyclesWaterMaterial()
-            self.waterObject.data.materials.append(self.waterMaterial)
+            if len(self.waterObject.data.materials) < 1:
+                self.waterMaterial = createCyclesWaterMaterial()
+                self.waterObject.data.materials.append(self.waterMaterial)
 
         if self.update_Forest:
             createForest(self.terrainObject, self.terrainVerts, self.angleMap,self.seaMap,self.useGameOfLife, self.forestLimits, self.forestAngle, self.golSteps, self.minTreeHeight, self.startPercent)
