@@ -91,7 +91,6 @@ def myGaussianBlur (array,steps):
                    +getArrayValue(x+1,y-1,array) +2*getArrayValue(x+1,y,array) + getArrayValue(x+1,y+1,array))/24,
                    array)
 
-
 def blenderOutput(zCoords,name = "terrain", finalSize=10, position = None):
     if position == None:
         position = bpy.context.scene.cursor_location      
