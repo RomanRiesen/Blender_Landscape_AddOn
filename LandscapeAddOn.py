@@ -342,7 +342,6 @@ def createCyclesTerrainMaterial():
     input = node_mixGrassAndDirt.outputs[0]
     link = links.new(output,input)
 
-
     output = node_mixFinal.outputs[0]
     input = node_output.inputs[0]
     link = links.new(output,input)
@@ -426,18 +425,18 @@ class createForest():
           for y in range(self.size):
                n= numberOfMoorNeighbours(x,y,self.forestMap)
                if (n==0):
-                    self.tempForestMap[x][y]=1#0
+                    self.tempForestMap[x][y]=0
                if (n==1):
-                    self.tempForestMap[x][y]=1#0
+                    self.tempForestMap[x][y]=0
                if (n==2):
-                    self.tempForestMap[x][y]=1#0
+                    self.tempForestMap[x][y]=0
                if (n==3):
-                    self.tempForestMap[x][y]=1
+                    self.tempForestMap[x][y]=0
                if (n==4):
                    if self.Feld[a][b]==1:
-                       self.tempForestMap[x][y]=1
+                       self.tempForestMap[x][y]=0
                    else:
-                       self.tempForestMap[x][y]=1#0
+                       self.tempForestMap[x][y]=1
                if (n==5):
                     self.tempForestMap[x][y]=1
                if (n==6):
@@ -448,7 +447,8 @@ class createForest():
                     self.tempForestMap[x][y]=1
 
         self.forestMap = self.tempForestMap
-
+    
+    #Initiate the appropriate amount of living trees
     def createRandomForestMap(self):
         self.forestMap     = [x[:] for x in [[0]*self.size]*self.size]
         for x in range(-1,self.size):
@@ -591,7 +591,6 @@ class thermalErosion():
                         setArrayValue(x,y, getArrayValue(x,y,self.verts) - self.erosionValue,self.verts)
                         setArrayValue(xOut,yOut,getArrayValue(x,y,self.verts) + self.erosionValue,self.verts)
 
-
     def calculateAngle (self,height0,height1):
         """height 0: Origin height,height1 other height. Angle negative -> other is lower."""
         return degrees(atan(height1-height0))
@@ -655,7 +654,6 @@ class createSeas:
         
         bpy.ops.mesh.delete(type='VERT')
         bpy.ops.object.mode_set(mode = 'OBJECT')
-
 
     def rain(self):
         for x in range (self.size):
@@ -912,7 +910,6 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
             col.prop(self,'forestAngle')
             col.prop(self,'golSteps')
 
-
          layout.label("Updates:")
          box = layout.box()
          split = box.split()
@@ -920,8 +917,6 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
          col.prop(self,'update_Erosion')
          col.prop(self,'update_Seas')
          col.prop(self,'update_Forest')
-
-
 
     @classmethod
     def poll (cls,context):
@@ -942,7 +937,6 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
          self.angleMap = angleAndHeightMap.angleMap
          self.terrainVerts = angleAndHeightMap.heightMap
 
-         
          bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN', center='MEDIAN')
 
     def adoptTerrain (self,obj):
@@ -975,9 +969,11 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
                 self.createTerrain()
         
         if len(self.terrainObject.data.materials) < 1:
+            self.selfCreatedMaterial = True
             self.terrainMaterial = createCyclesTerrainMaterial()
             self.terrainObject.data.materials.append(self.terrainMaterial)
-
+        else: self.selfCreatedMaterial
+        
         bpy.context.space_data.viewport_shade = 'MATERIAL'
 
         if self.update_Seas:
@@ -986,10 +982,8 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
             self.seaMap = seas.seaMap
             
             if len(self.waterObject.data.materials) < 1:
-                self.selfCreatedMaterial = True
                 self.waterMaterial = createCyclesWaterMaterial()
                 self.waterObject.data.materials.append(self.waterMaterial)
-            else: self.selfCreatedMaterial = False
 
         if self.update_Forest:
             self.forestLimits = [self.lowerForestLimit,self.higherForestLimit]
