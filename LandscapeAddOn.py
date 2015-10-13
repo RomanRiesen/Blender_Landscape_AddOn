@@ -611,7 +611,8 @@ class createSeas:
         self.blenderSize      = terrainObject.dimensions.x
         self.rain()
         for i in range(steps):
-            self.rain()
+            self.flow()
+            
         self.dissolve()
 
         self.realWaterHeight = [x[:] for x in [[0]*self.size]*self.size]
@@ -624,7 +625,6 @@ class createSeas:
 
         self.waterObject= blenderOutput(self.realWaterHeight,"water",self.blenderSize)
         waterObjectData = self.waterObject.data
-
 
         bpy.ops.object.mode_set(mode = 'EDIT')
         bpy.ops.mesh.select_all(action='DESELECT')
