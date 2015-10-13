@@ -712,14 +712,11 @@ class createSeas:
             for y in range (self.size):
                 self.waterMap[x][y]-= self.evaporationAmount
        
-
-
 #    USER INTERFACE
 
 modes = [('0', 'Terrain & Erosion', 'Create your basic terrain.'),
      ('1', 'Water', 'Add water (basic seas).'),
      ('2', 'Forest', 'Generate vertex group for the distribution and height of trees (or other objects).')]
-
 
 class MESH_OT_primitive_landscape_add(bpy.types.Operator):
     '''Add a Landscape'''
@@ -744,6 +741,7 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
             default=True)
 
     ##DIAMOND SQUARE
+    
     seed = IntProperty(name="Seed",
             description ="The Seed for the pseudo random number generator",
             default=0)
@@ -761,7 +759,6 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
 
     randomness = FloatProperty(name="Randomness",
             default=1.75, min=0.5, max=5.0)
-
 
     smoothAmount = IntProperty(name="Smoothness",
             description="The amount of cycles of the smoothing function",
@@ -793,6 +790,7 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
     smoothnessAfterErosion = IntProperty(name = "Smoothness After Erosion",
             description = "The amount of cycles of the smoothing function, after the erosion is applied", default = 0, min=0)
     ##FOREST
+    
     minTreeHeight = FloatProperty(name="Min. height of trees",
             description="The lowest Weight of the \" Tree height\" vertex group (which \"simulates\" the decline in size of trees up to the tree limit).",
             default=0.4, min=0, max=1)
@@ -835,7 +833,6 @@ class MESH_OT_primitive_landscape_add(bpy.types.Operator):
     waterSmoothing = IntProperty(name="Smoothing",
             description="How many steps the water will be smoothed processed",
             default=8, min=0)
-
 
     def draw (self,context):
         
