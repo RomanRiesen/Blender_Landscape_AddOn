@@ -406,12 +406,11 @@ class createForest():
         if obstacleMap == None:
             self.obstacleMap = [x[:] for x in [[0]*self.size]*self.size]
 
-        self.createRandomForestMap()
-
         self.tempForestMap = [x[:] for x in [[0]*self.size]*self.size]
 
         if useGameOfLife :
             for i in range (self.steps):
+                self.createRandomForestMap()
                 self.step()
         else:
             self.forestMap = [x[:] for x in [[1]*self.size]*self.size] # Forest everywhere.
@@ -434,7 +433,7 @@ class createForest():
                    if self.Feld[a][b]==1:
                        self.tempForestMap[x][y]=1
                    else:
-                       self.tempForestMap[x][y]=0
+                       self.tempForestMap[x][y]=1
                if (n==5):
                     self.tempForestMap[x][y]=1
                if (n==6):
@@ -1034,3 +1033,4 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+
