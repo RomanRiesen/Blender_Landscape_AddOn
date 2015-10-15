@@ -406,11 +406,12 @@ class createForest():
         if obstacleMap == None:
             self.obstacleMap = [x[:] for x in [[0]*self.size]*self.size]
 
+        self.createRandomForestMap()
+
         self.tempForestMap = [x[:] for x in [[0]*self.size]*self.size]
 
         if useGameOfLife :
             for i in range (self.steps):
-                self.createRandomForestMap()
                 self.step()
         else:
             self.forestMap = [x[:] for x in [[1]*self.size]*self.size] # Forest everywhere.
@@ -431,7 +432,7 @@ class createForest():
                     self.tempForestMap[x][y]=0
                if (n==4):
                    if self.Feld[a][b]==1:
-                       self.tempForestMap[x][y]=1
+                       self.tempForestMap[x][y]=0
                    else:
                        self.tempForestMap[x][y]=1
                if (n==5):
@@ -598,6 +599,7 @@ class createSeas:
         self.size             = len(twoDimensionalHeightArray)
         self.waterMap         = [x[:] for x in [[0]*self.size]*self.size]
         self.waterFlowMap     = [x[:] for x in [[0]*self.size]*self.size]
+        self.tempMap          = [x[:] for x in [[0]*self.size]*self.size]
         self.rainAmount       = rainAmount
         self.evaporationAmount= evaporationAmount
         self.steps            = steps
@@ -658,7 +660,7 @@ class createSeas:
         for x in range (self.size):
             for y in range (self.size):
                 terrain=self.terrainHeight
-                water = self.waterMap
+                water = self.tempMap
                 startPoint=getArrayValue(x,y,water)+getArrayValue(x,y,terrain)
                 lowerNeighbours = [] #list of Lower Cells
                 #if the neighbour Cell is lower, it's poition is appended to the list.
